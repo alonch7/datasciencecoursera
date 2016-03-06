@@ -1,0 +1,60 @@
+---
+
+---
+#project Machine Learning:
+#loading packages
+library(caret)
+library(stringr)
+
+#reading data:
+
+training<- read.csv("Coursera/pml-training.csv")
+testing<- read.csv("Coursera/pml-testing.csv")
+
+#Cleaning data:
+
+training <-training[ , ! apply( training , 2 , function(x) any(is.na(x) )) ]
+
+nzv<- nearZeroVar(training,saveMetrics=T)$nzv
+
+training<- training[,which(nzv==FALSE)]
+
+###Delete correlated viarables:
+corrMatrix<- cor(training[,sapply(training, is.numeric)])
+
+  highcorrvb<- findCorrelation(corrMatrix, cutoff = 0.9, verbose = TRUE)
+  
+  training<- training[,-highcorrvb]
+  
+  dim(training)
+
+## Spliting data to train set and test set
+intrain<- createDataPartition(training$classe,p=0.75,list=F)
+
+train<- training[intrain,]
+
+test<- training[-intrain,]
+
+#train tree method:
+trainrpart<- train(classe~.,method="rpart",data=train)
+
+predrpart<- predict(trainrpart,test)
+
+confusionMatrix(predrpart,test$classe)
+##66%
+
+#train Random Forest
+trainrf<- train(classe~.,method="rf",data=train)
+
+predrf<- predict(trainrf,test)
+
+confusionMatrix(predrf,test$classe)
+### the MMRS IS - 0
+###100% Accuracy
+
+#test-set
+names<- names(training)
+testing<- testing[,which(names %in% names(testing))]
+predtest<- predict(trainrf,testing)
+print(predtest)
+B A B A A E D B A A B C B A E E A B B B
