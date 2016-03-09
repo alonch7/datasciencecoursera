@@ -12,6 +12,7 @@ training<- read.csv("Coursera/pml-training.csv")
 testing<- read.csv("Coursera/pml-testing.csv")
 
 #Cleaning data:
+####Before an effective model can be built, it is necessary to remove features with poor out of sample predictive power from the data table. The user_name variable is removed in order to develop a model that can be extrapolated to new users. The X variable and the time dependent variables (raw_timestamp through num_window) are removed in order to blind the learning machines from any time dependent patterns that may not be present in a new sample.
 
 training <-training[ , ! apply( training , 2 , function(x) any(is.na(x) )) ]
 
@@ -28,7 +29,8 @@ corrMatrix<- cor(training[,sapply(training, is.numeric)])
   
   dim(training)
 
-## Spliting data to train set and test set
+### Spliting data to train set and test set
+####Due to the large sample size, 19622 points, it is possible to partition the training dataset further into a training set and a validation set. This allows the predictive capability of several models to be compared on the validation set before selecting the final model for use on the testing set. After applying the predictive model to the test set no more model tuning should take place to avoid overfitting.
 intrain<- createDataPartition(training$classe,p=0.75,list=F)
 
 train<- training[intrain,]
