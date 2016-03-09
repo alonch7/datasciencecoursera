@@ -55,8 +55,13 @@ confusionMatrix(predrf,test$classe)
 ###100% Accuracy
 
 #test-set
+### now we are applying the model we built to the test-set
 names<- names(training)
+
 testing<- testing[,which(names %in% names(testing))]
+
 predtest<- predict(trainrf,testing)
+
 print(predtest)
+
 B A B A A E D B A A B C B A E E A B B B
